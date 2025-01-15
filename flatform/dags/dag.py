@@ -167,7 +167,7 @@ def seg_models():
 def cls_models():
     config = load_config()
 
-    if config["encoder_name"] == "restnet50":
+    if config["encoder_name"] == "resnet50":
         model = torchvision.models.resnet50(weights = "DEFAULT")
 
     elif config["encoder_name"] == "resnext50_32x4d":
@@ -360,7 +360,7 @@ def logging_artifacts():
     artifacts.mkdirs(parents = True, exist_ok = True)
 
     # copy config file
-    cmd_0 = f"cp ./config/multitasks_config.yaml {artifacts}/multitask_config.yaml"
+    cmd_0 = f"cp ./config/multitasks_config.yaml {artifacts}/multitasks_config.yaml"
 
     # copy output path
     cmd_1 = f"cp -r {path_save} {artifacts}"
