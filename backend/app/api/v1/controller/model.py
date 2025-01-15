@@ -111,8 +111,8 @@ def load_model(config, run_id):
 
     model.load_state_dict(ckpt["model_state_dict"])
                         
-
     return model
+
 
 def predict(artifacts, image):
 
@@ -136,8 +136,6 @@ def predict(artifacts, image):
         pred = output.argmax(1).detach().cpu().numpy()
 
         predicted_label = labels[pred]
-
-        
 
     except Exception as e:
         print(str(e))

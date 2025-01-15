@@ -1,33 +1,31 @@
 config_file: ./config/parameters.yaml
 src_dir: ./DATA
 tmp_dir: ./cls_tmp_dir
-data:
-train_file:
-test_file:
+data: cars.zip
+train_file: train.csv
+val_file: test.csv
 # path_save: data_source/output/versions/run_id
 # path_artifact: data_source/artifacts/task/version/run_id
 
 #Training parameters
-val_size: 0.2
-seed: 42
 num_classes: 2
 imgsz: 256
-optimizer: Adam
-lr: 0.005
-weight_decay: 1e-5
-epochs: 10
+optimizer: Adam # Adam, AdamW
 num_workers: 0
 batch_size: 16
-optimizer: Adam # Adam, AdamW
-weight_decay: 
-device: cuda
+device: cpu
+epochs: 2
+lr: 0.005
+weight_decay: 1e-5
+seed: 42
+val_size: 0.2
 
 # PATH
-ckpt_path: checkpoint.pth
+#ckpt_path: checkpoint.pth
 
 # mlflow config:
 run_name: resnet_base
-tracking_uri:
+tracking_uri: http://0.0.0.0:5000
 experiment_name: classification
 registered_name: restnet50
 model_alias: productions

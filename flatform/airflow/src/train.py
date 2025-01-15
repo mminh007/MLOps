@@ -1,7 +1,7 @@
 from config_args import setup_parse, update_config
-from src.data import build_dataset
-from src.modeling import ResNet50, evaluate
-from src.ultis import connect_mlflow
+from utils.data import build_dataset
+from utils.modeling import ResNet50, evaluate
+from utils.func import connect_mlflow
 import os
 import torch
 import torch.nn as nn

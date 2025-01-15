@@ -8,11 +8,13 @@ def setup_parse():
     parser.add_argument("--data", type=str)
     parser.add_argument("--tmp-dir", type=str)
     parser.add_argument("--src-dir", type=str, help="using save model")
+    parser.add_argument("--train-file", type=str)
+    parser.add_argument("--val-file", type=str)
 
     parser.add_argument("--num-classes", type=int)
     parser.add_argument("--imgsz", type=tuple, help="size of input")
     parser.add_argument("--optimizer", type=str)
-    parser.add_argument("--num-worker", type=int)
+    parser.add_argument("--num-workers", type=int)
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--device", type=str)
     parser.add_argument("--epochs", type=int)
@@ -20,7 +22,6 @@ def setup_parse():
     parser.add_argument("--weight-decay", type=float)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--val-size", type=float)
-    parser.add_argument("--output", type=str)
     
     parser.add_argument("--run-name", type=str)
     parser.add_argument("--version", type=str)
