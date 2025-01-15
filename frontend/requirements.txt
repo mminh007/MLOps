@@ -1,0 +1,5 @@
+streamlit
+requests
+numpy
+pillow
+opencv-python

@@ -1,0 +1,10 @@
+uvicorn
+fastapi[standard]
+torch
+torchaudio
+torchvision
+numpy
+opencv-python
+segmentation_models_pytorch
+kornia
+mlfow

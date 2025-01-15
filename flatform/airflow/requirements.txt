@@ -1,0 +1,7 @@
+torch==2.2.0
+torchmetrics
+torchaudio
+numpy
+scikit-learn
+albumentations
+
