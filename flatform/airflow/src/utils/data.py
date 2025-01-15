@@ -5,7 +5,6 @@ import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 
-
 class LoadDataset():
     def __init__(self, train_dir, test_dir, imgsz, seed, val_size):
         self.train_dir = train_dir

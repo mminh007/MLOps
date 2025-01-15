@@ -11,8 +11,6 @@ load_dotenv()
 
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
 
-
-
 def load_config():
 	print(f"Loading model and artifacts")
 	mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)

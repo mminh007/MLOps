@@ -13,6 +13,7 @@ def create_temp_dir():
 	path_save.mkdir(parents=True, exist_ok=True)
 	if not path_save.exists():
 		raise FileExistsError(f"Failed to create directory: {path_save}")
+	print(path_save)
 
 default_args = {
     "owner": "airflow",
@@ -33,19 +34,19 @@ with DAG(
 									 dag=dag)
 	
     processing_task = BashOperator(task_id="process_data",
-								   bash_command=("python3 /tmp/processing.py" \
-						 			" --config_file= /tmp/parameters.yaml"),
+								   bash_command=("cd / && cd opt/airflow && python3 ./src/processing.py" \
+						 			" --config-file='./config/parameters.yaml'"),
 									dag=dag)
 									
 	
     training_task = BashOperator(task_id="train_model",
-								 bash_command=("python3 /tmp/train.py" \
-					                " --config_file= /tmp/parameters.yaml"),
+								 bash_command=("cd / && cd opt/airflow && python3 ./src/train.py" \
+					                " --config-file='./config/parameters.yaml'"),
 									dag=dag)
 	
     registered_task = BashOperator(task_id="registered_model",
-								  bash_command=("python3 /tmp/register.py" \
-						            " --config_file= /tmp/parameters.yaml"),
+								  bash_command=("cd / && cd opt/airflow && python3 ./src/register.py" \
+						            " --config-file='./config/parameters.yaml'"),
 									dag=dag)
 	
 

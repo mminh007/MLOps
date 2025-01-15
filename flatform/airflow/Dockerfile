@@ -1,18 +1,15 @@
 FROM apache/airflow:2.10.3
 
-WORKDIR /tempt
+#WORKDIR /tempt
 
-COPY ./src /tempt/src
+USER root
 
-COPY ./config_args.py /tempt/config_args.py
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y git
 
-COPY ./processing.py /tempt/processing.py
-
-COPY ./register.py /tempt/register.py
-
-COPY ./train.py /tempt/train.py
-
-COPY ./config/parameters.yaml /tempt/parameters.yaml
+    
+USER airflow
 
 COPY requirements.txt .
 

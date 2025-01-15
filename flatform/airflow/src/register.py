@@ -1,4 +1,4 @@
-from src.ultis import registered_model, connect_mlflow
+from utils.func import registered_model, connect_mlflow
 from config_args import setup_parse, update_config
 import mlflow
 from mlflow.tracking import MlflowClient
