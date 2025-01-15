@@ -1,6 +1,0 @@
-segmentation_models_pytorch
-kornia
-torchmetrics
-numpy
-scikit-learn
-albumentation

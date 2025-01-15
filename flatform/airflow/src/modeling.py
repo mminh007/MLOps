@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
+import torch.nn.functional as F 
 
 
 class Bottleneck(nn.Module):
@@ -102,47 +101,18 @@ def ResNet50(num_classes, channels = 3):
     return ResNet(Bottleneck, [3,4,6,4], num_classes, channels)
 
 
-def load_model(config, run_id):
-	
-    model = ResNet50(num_classes=config["num_classes"])
+def evaluate(model, data_loader, device, criterion):
+    model.eval()
+    losses = []
 
-    ckpt_path = config["src_dir"] / run_id / "model.pth"
-    ckpt = torch.load(ckpt_path, weights_only=True, map_location="cpu")
+    with torch.no_grad():
+        for image, label in data_loader:
+            x = image.to(device)
+            y = label.long().to(device)
 
-    model.load_state_dict(ckpt["model_state_dict"])
-                        
+            output = model(x)
 
-    return model
+            loss = criterion(output, y)
+            losses.append(loss.item())
 
-def predict(artifacts, image):
-
-    labels = ["Car", "Truck"]
-    try:
-        model = artifacts["model"].eval()
-        config = artifacts["config"]
-
-        transform = A.Compose(
-            [
-                A.Resize((config["imgsz"], config["imgsz"])),
-                ToTensorV2()
-            ]
-        )
-        img = transform(image=image)["image"]
-        img.unsqueeze(0) # C,H,W -> B,C,H,W
-
-        with torch.no_grad():
-            output = model(img)
-
-        pred = output.argmax(1).detach().cpu().numpy()
-
-        predicted_label = labels[pred]
-
-        
-
-    except Exception as e:
-        print(str(e))
-        return Exception("An error occured while predicting the class of image")
-
-
-    return {"label": predicted_label,
-            "confidence": torch.max(output)}
+    return sum(losses) / len(data_loader)

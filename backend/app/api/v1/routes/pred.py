@@ -1,22 +1,24 @@
-import os
-import mlflow
-import yaml
-import torch
-from controller.utils import load_config, load_model_from_mlflow
-from controller.model import MultiTaskModel, predict
+from PIL import Image
+import io
+from schema.data_cfg import InputCfg
+from controller.utils import load_config
+from controller.model import predict
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
-from mlflow import MlflowClient
 from dotenv import load_dotenv
+
+load_dotenv()
 
 
 model_artifacts = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-	model_artifacts["v1"] = load_model_from_mlflow()
-
+	"""
+	"""
+	model_artifacts["v1"] = load_config()
+	# update selectbox streamlit if adding model version
 	yield
 	model_artifacts.clear()
 
@@ -26,7 +28,8 @@ router = APIRouter(lifespan=lifespan)
 @router.post("/predict",
 			 description="Predict the segmentation")
 
-async def predict_img(input_data, model_version):
+async def predict_img(data_input: InputCfg):
+
 	"""
 	input_data: image
 	model_version: version using predict
@@ -34,6 +37,9 @@ async def predict_img(input_data, model_version):
 	Return:
 		prediction
 	"""
+	model_version = data_input.model_version
+	image_data = await data_input.image.read()
+	image = Image.open(io.BytesIO(image_data))
 	try:
 
 		artifacts = model_artifacts.get(model_version)
@@ -44,7 +50,7 @@ async def predict_img(input_data, model_version):
 				detail="Invalid model version"
 			)
 		
-		output = await predict(artifacts, input_data)
+		output = await predict(artifacts, image)
 		if isinstance(output, Exception):
 			raise HTTPException(
 				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

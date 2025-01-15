@@ -1,82 +1,48 @@
-import os
-import mlflow.artifacts
-import mlflow.artifacts
-import yaml
 import mlflow
-import torch
 from mlflow import MlflowClient
-from dataclasses import dataclass, field
-from controller.model import MultiTaskModel
+from configs.cfg import CLS_Config
+from dotenv import load_dotenv
+import os
+import yaml
+import mlflow.artifacts
+from model import load_model
 
-@dataclass
-class Config:
-    registered_name: str = "multi-tasks-segmentation"
-    model_alias: str = "production"
-    
+load_dotenv()
 
-def load_config(tracking=None,
-                local_directory=None):
-    print("Loading config model and artifacts")
-    mlflow.set_tracking_uri(tracking)
-    
-    try:
-        config = Config()
-        client = MlflowClient()
-        alias_mv = client.get_model_version_by_alias(config.registered_name,
-                                                     config.model_alias)
-        
-        print("Downloading model artifacts with run_id: ", alias_mv.run_id)
-        
-        model_path_uri = f"runs:/{alias_mv.run_id}/model"
-        mlflow.artifacts.download_artifacts(model_path_uri, dst_path=local_directory)
-        
-        cfg_path_uri = f"runs:/{alias_mv.run_id}/config"
-        mlflow.artifacts.download_artifacts(cfg_path_uri, dst_path=local_directory)
-        
-        with open(local_directory / "multitasks_config.yaml", "rb") as f:
-              cfg = yaml.safe_load(f)
-              
-    except Exception as e:
-         print(f"Error loading model artifacts")
-         print(e)
-         
-    return cfg, alias_mv.run_id
-
-        
-LOCAL_ARTIFACTS = "DATA/artifacts"
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
-MLFLOW_LOCAL_DIR = "/DATA/mlflow_download"
-
-if not os.path.exists(MLFLOW_LOCAL_DIR):
-	MLFLOW_LOCAL_DIR.mkdir(parents = True, exist_ok = True)
 
 
-def load_model_from_mlflow():
-    """
-    Get model's weight and config from mlflow 
-    ----------------------
-    Return:
-		Dictionary:
-          {
-			"config": config.yaml
-            "model": model arch + weights
-          }
-    """
 
-    box = {}
-    cfg, _ = load_config(tracking=MLFLOW_TRACKING_URI,
-					  local_directory=MLFLOW_LOCAL_DIR)
-    
-    model = MultiTaskModel(config=cfg)
-    
-    ckpt = torch.load(MLFLOW_LOCAL_DIR / "best_model.pth")
-    model.load_state_dict(ckpt["model_state_dict"])
-    
-    box["cfg"] = cfg
-    box["model"] = model
-    return box
-    
+def load_config():
+	print(f"Loading model and artifacts")
+	mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+	artifacts = {}
 
+	try:
+		deploy_config = CLS_Config()
+		client = MlflowClient()
+		alias_mv = client.get_model_version_by_alias(deploy_config.registered_name,
+											   		 deploy_config.model_alias)
 
-    
+		print(f"Downloading model artifacts with run_id:", alias_mv.run_id)
 
+		config_artifacts_uri = f"run://{alias_mv.run_id}/config"
+		mlflow.artifacts.download_artifacts(artifact_uri=config_artifacts_uri,
+									  		dst_path=".")
+		
+		with open("./config/parameters.yaml", "rb") as f:
+			config = yaml.safe_load(f)
+		
+		artifacts["config"] = config
+		artifacts["deploy_config"] = deploy_config
+
+		#model_uri = f"models:/{deploy_config.registered_name}@production"
+
+		artifacts["model"] = load_model(config=config,
+								  		run_id=alias_mv.run_id)
+	
+	except Exception as e:
+		print(f"Error loading model artifacts")
+		print(e)
+
+	return artifacts
