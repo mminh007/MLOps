@@ -4,7 +4,8 @@ __pycache__/
 *$py.class
 
 DATA/
-
+flatform/airflow/logs
+flatform/airflow/plugins
 
 # C extensions
 *.so
