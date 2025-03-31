@@ -6,9 +6,8 @@ USER root
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y git
+    apt-get install -y git unzip
 
-    
 USER airflow
 
 COPY requirements.txt .
